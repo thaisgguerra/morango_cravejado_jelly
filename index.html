@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e9e9e5" />
+    <meta name="description" content="Um estudo interativo de matéria: um morango de gelatina translúcida, luz de estúdio e física de corpo mole em tempo real." />
+    <title>Strawberry Matter. — Material Studies No. 002</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23df4965' d='M5 12Q3 5 16 6Q29 5 27 12Q26 23 16 29Q6 23 5 12'/%3E%3Cpath fill='%235c824b' d='m16 10-8-7 8 2 8-2-8 7'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="study" aria-label="Estudo interativo de material gelatinoso">
+      <div id="scene-container" aria-label="Morango 3D interativo. Arraste o objeto para deformá-lo; use os controles para explorar o material.">
+        <svg id="cut-stroke" width="100%" height="100%" aria-hidden="true"><line id="cut-stroke-line" x1="0" y1="0" x2="0" y2="0" hidden /></svg>
+      </div>
+      <p id="cut-guide" hidden><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m4 16 5-5M9 11l1.5 1.5L17 3c-3.5.5-5.8 2-8 5L7.5 9.5 9 11Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg>Corte longitudinal · deslize sobre a fruta</p>
+
+      <header class="editorial">
+        <p class="eyebrow">Material studies <span class="eyebrow-slash">/</span> No. 002</p>
+        <h1>Morango<br /><em>Cravejado.</em></h1>
+        <p class="editorial-description">Um estudo sobre açúcar, textura<br />e a incapacidade da internet<br />de deixar o morango em paz.</p>
+      </header>
+
+      <div class="live-status" role="status" aria-live="polite">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>WebGL <span class="status-divider">·</span> <span id="status-text">Live</span></span>
+      </div>
+
+      <div id="loading" role="status" aria-live="polite">
+        <span class="loading-ring" aria-hidden="true"></span>
+        <span>Preparando a matéria</span>
+      </div>
+
+      <div id="webgl-error" class="error-message" role="alert" hidden>
+        <p>Este estudo precisa de WebGL.</p>
+        <span>Ative a aceleração de hardware do navegador e recarregue a página.</span>
+      </div>
+
+      <section class="observation" aria-label="Estatísticas da simulação">
+        <p id="drag-hint" class="interaction-hint">
+          <svg viewBox="0 0 24 24" width="25" height="25" fill="none" aria-hidden="true"><path d="M8 11V5.5a1.5 1.5 0 0 1 3 0V10m0 0V4a1.5 1.5 0 0 1 3 0v6m0 0V5.5a1.5 1.5 0 0 1 3 0V11m0-2a1.5 1.5 0 0 1 3 0v5c0 4.5-2.5 7-6.5 7-2.7 0-4.3-1-6-3L3.7 13a1.5 1.5 0 0 1 2.3-1.9L8 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <span><strong>Toque. Arraste. Solte.</strong><br />Sinta a textura. Observe a inércia.</span>
+        </p>
+        <dl class="telemetry">
+          <div><dt>Massa</dt><dd><span id="mass-stat">124.8</span><span class="unit">g</span></dd></div>
+          <div><dt>Volume de repouso</dt><dd><span id="volume-stat">100.0</span><span class="unit">%</span></dd></div>
+          <div><dt>Energia cinética</dt><dd><span id="energy-stat">0.0</span><span class="unit">mJ</span></dd></div>
+        </dl>
+      </section>
+
+      <aside class="specimen-panel" aria-labelledby="specimen-title">
+        <div class="panel-heading">
+          <h2 id="specimen-title">The specimen</h2>
+          <span class="density" title="Densidade do material"><i>ρ</i> <span id="density-value">1.05</span> g/cm³</span>
+        </div>
+
+        <fieldset class="material-selector">
+          <legend class="sr-only">Escolha o material</legend>
+          <button type="button" class="material-option active" data-material="strawberry" aria-pressed="true"><span class="color-dot strawberry" aria-hidden="true"></span>Morango</button>
+          <button type="button" class="material-option" data-material="pistachio" aria-pressed="false"><span class="color-dot pistachio" aria-hidden="true"></span>Pistache</button>
+          <button type="button" class="material-option" data-material="passionfruit" aria-pressed="false"><span class="color-dot passionfruit" aria-hidden="true"></span>Maracujá</button>
+        </fieldset>
+
+        <div class="parameter">
+          <div class="parameter-label"><label for="firmness">Firmness</label><span><output id="firmness-value" for="firmness">1.2</output> <span class="parameter-unit">kPa</span></span></div>
+          <input type="range" id="firmness" min="0.3" max="3" step="0.1" value="1.2" aria-label="Firmness: rigidez do material" style="--range-progress: 33.333%" />
+          <div class="range-extremes" aria-hidden="true"><span>Macia</span><span>Firme</span></div>
+        </div>
+
+        <div class="parameter">
+          <div class="parameter-label"><label for="damping">Internal damping</label><span><output id="damping-value" for="damping">3.0</output> <span class="parameter-unit">s⁻¹</span></span></div>
+          <input type="range" id="damping" min="0.5" max="8" step="0.1" value="3" aria-label="Internal damping: amortecimento interno" style="--range-progress: 33.333%" />
+          <div class="range-extremes" aria-hidden="true"><span>Oscilante</span><span>Estável</span></div>
+        </div>
+
+        <div class="action-row">
+          <button type="button" id="nudge" class="button button-primary"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m8.8 1.8-5 7h4.5l-1 5.4 5-7H7.8l1-5.4Z" stroke="currentColor" stroke-linejoin="round" /></svg>Give it a nudge</button>
+          <button type="button" id="reset" class="button button-secondary">Reset<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 6.5a5 5 0 1 1 .5 4M3 2.5v4h4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+        </div>
+
+        <section class="cut-section" aria-label="Explore o interior do morango">
+          <div class="cut-actions">
+            <button type="button" id="cut-toggle" class="button cut-button" aria-pressed="false" aria-describedby="cut-status"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m4 16 5-5M9 11l1.5 1.5L17 3c-3.5.5-5.8 2-8 5L7.5 9.5 9 11Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg>Fazer um corte</button>
+            <button type="button" id="cut-reset" class="button button-secondary" disabled>Reunir<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 8H6m0 0L3.5 5.5M6 8l-2.5 2.5M14.5 8H10m0 0 2.5-2.5M10 8l2.5 2.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+          </div>
+          <p id="cut-status" class="cut-status" role="status" aria-live="polite">Descubra as camadas por dentro.</p>
+          <button type="button" id="cut-now" class="cut-fallback" hidden>Cortar ao meio <span aria-hidden="true">↗</span></button>
+          <div id="cut-controls" class="cut-controls" hidden>
+            <div class="parameter-label"><label for="cut-opening">Abertura do corte</label><output id="cut-opening-value" for="cut-opening">72%</output></div>
+            <input type="range" id="cut-opening" min="0" max="100" step="1" value="72" style="--range-progress: 72%" />
+          </div>
+          <ul id="cut-legend" class="cut-legend" aria-label="Camadas do interior" hidden>
+            <li><span class="layer-swatch layer-shell" aria-hidden="true"></span><span>Casquinha de chocolate branco</span></li>
+            <li><span class="layer-swatch layer-cream" aria-hidden="true"></span><span>Brigadeiro de leite em pó</span></li>
+            <li><span class="layer-swatch layer-fruit" aria-hidden="true"></span><span>Morango fresco</span></li>
+          </ul>
+        </section>
+
+        <div class="view-controls" aria-label="Controles da visualização">
+          <span class="view-label">Explore</span>
+          <div class="zoom-controls" role="group" aria-label="Zoom"><button type="button" id="zoom-out" aria-label="Diminuir zoom">−</button><span aria-hidden="true">Zoom</span><button type="button" id="zoom-in" aria-label="Aumentar zoom">+</button></div>
+          <button type="button" id="rotate" class="rotate-button" aria-label="Ativar rotação automática de 360 graus" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M12.5 5.5C11.4 4.6 9.8 4 8 4 4.7 4 2 5.8 2 8s2.7 4 6 4 6-1.8 6-4M10 5.5h2.5V3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" /></svg>360°</button>
+        </div>
+
+        <div class="toggles">
+          <label class="toggle"><input type="checkbox" id="half-speed" /><span class="checkbox-mark" aria-hidden="true"></span><span>½ speed</span></label>
+          <label class="toggle"><input type="checkbox" id="show-mesh" /><span class="checkbox-mark" aria-hidden="true"></span><span>Show mesh</span></label>
+          <label class="toggle pause-toggle"><input type="checkbox" id="pause" /><span class="pause-icon" aria-hidden="true"><i></i><i></i></span><span>Pause</span></label>
+        </div>
+
+        <div class="panel-note"><span class="note-dot" aria-hidden="true"></span>Matéria virtual. Sensação quase real.</div>
+      </aside>
+
+      <footer class="study-footer"><span>Soft-body dynamics</span><b aria-hidden="true">·</b><span>Refracted light</span><b aria-hidden="true">·</b><span>Custom GLSL</span></footer>
+    </main>
+    <noscript><div class="noscript-message">Ative o JavaScript para explorar o estudo de material interativo.</div></noscript>
+    <script>
+      if (location.protocol === 'file:') {
+        document.getElementById('loading').hidden = true;
+        document.getElementById('webgl-error').hidden = false;
+        document.querySelector('#webgl-error span').textContent = 'Use um servidor local: npm run dev ou python3 -m http.server 8000. Depois abra o endereço HTTP exibido.';
+      }
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
